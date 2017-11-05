@@ -2,8 +2,10 @@
 
 from io import BytesIO
 from pprint import pprint
+import os
+import os.path
 import sys
-from zipfile import ZipFile
+from zipfile import ZipFile, ZIP_DEFLATED
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -34,6 +36,22 @@ def update_local_fileset(topology_id, fileset_id):
     fileset.extractall(path=fileset_id)
 
 
+def update_remote_fileset(topology_id, fileset_id):
+    """Upload a local set of config files to a topology"""
+    # step 1: zip up the files
+    with ZipFile(fileset_id + '.zip', 'w') as zf:
+        def addToZip(zf, path, zippath):
+            if os.path.isfile(path):
+                zf.write(path, zippath, ZIP_DEFLATED)
+            elif os.path.isdir(path):
+                if zippath:
+                    zf.write(path, zippath)
+                for nm in os.listdir(path):
+                    addToZip(zf, os.path.join(path, nm), os.path.join(zippath, nm))
+        
+        addToZip(zf, fileset_id + '/', '')
+
+
 def get_sandbox_active_vmachines(sandbox_name):
     """List the virtual machines in the active topology of the sandbox with the supplied name"""
     # step 1: find the sandbox ID
@@ -61,6 +79,8 @@ def main():
             print("{0:<7} | {1:25} | {2:3}".format(topology['id'], topology['name'], topology['numberOfVMs']))
     elif sys.argv[1] == 'download':
         update_local_fileset(sys.argv[2], sys.argv[3])
+    elif sys.argv[1] == 'upload':
+        update_remote_fileset(sys.argv[2], sys.argv[3])
     elif sys.argv[1] == 'vmachines':
         print("{0:<15} | {1:25} | {2:7}".format("IP", "Name", "State"))
         print("-"*(15+25+7+6))
