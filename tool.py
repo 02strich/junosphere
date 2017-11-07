@@ -35,6 +35,10 @@ def update_local_fileset(topology_id, fileset_id):
     # step 3 extract it
     fileset.extractall(path=fileset_id)
 
+    # step 4 patch up config files
+    for path in os.listdir(fileset_id + "/configset/"):
+        os.system("sed -i '' '3,156d' " + fileset_id + "/configset/" + path)
+
 
 def update_remote_fileset(topology_id, fileset_id):
     """Upload a local set of config files to a topology"""
