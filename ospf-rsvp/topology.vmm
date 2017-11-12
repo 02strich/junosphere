@@ -1,0 +1,80 @@
+#include "common.defs"
+
+config "config" {
+
+	vm "CTS0"{
+		hostname "CTS0";
+		CENTOS_5_3
+
+		interface "em0" { EXTERNAL; };
+	};
+
+	vm "br-s-r1"{
+		hostname "br-s-r1";
+		VPTX_LATEST
+
+		interface "em0" { EXTERNAL; };	/* ge-0/0/0 */
+		interface "em1" { bridge "private4"; };	/* ge-0/0/1 */
+		interface "em2" { bridge "private5"; };	/* ge-0/0/2 */
+
+		install "ENV(HOME)/active/configset/br-s-r1.conf" "/root/junos.conf";
+	};
+
+	vm "br-s-r2"{
+		hostname "br-s-r2";
+		VPTX_LATEST
+
+		interface "em0" { EXTERNAL; };	/* ge-0/0/0 */
+		interface "em1" { bridge "private0"; };	/* ge-0/0/1 */
+		interface "em2" { bridge "private1"; };	/* ge-0/0/2 */
+
+		install "ENV(HOME)/active/configset/br-s-r2.conf" "/root/junos.conf";
+	};
+
+	vm "br-b1-r1"{
+		hostname "br-b1-r1";
+		VPTX_LATEST
+
+		interface "em0" { EXTERNAL; };	/* ge-0/0/0 */
+		interface "em1" { bridge "private1"; };	/* ge-0/0/1 */
+		interface "em2" { bridge "private3"; };	/* ge-0/0/2 */
+		interface "em3" { bridge "private5"; };	/* ge-0/0/3 */
+
+		install "ENV(HOME)/active/configset/br-b1-r1.conf" "/root/junos.conf";
+	};
+
+	vm "br-b2-r1"{
+		hostname "br-b2-r1";
+		VPTX_LATEST
+
+		interface "em0" { EXTERNAL; };	/* ge-0/0/0 */
+		interface "em1" { bridge "private0"; };	/* ge-0/0/1 */
+		interface "em2" { bridge "private2"; };	/* ge-0/0/2 */
+		interface "em3" { bridge "private4"; };	/* ge-0/0/3 */
+
+		install "ENV(HOME)/active/configset/br-b2-r1.conf" "/root/junos.conf";
+	};
+
+	vm "cst-c1-r1"{
+		hostname "cst-c1-r1";
+		VPTX_LATEST
+
+		interface "em0" { EXTERNAL; };	/* ge-0/0/0 */
+		interface "em1" { bridge "private3"; };	/* ge-0/0/1 */
+
+		install "ENV(HOME)/active/configset/cst-c1-r1.conf" "/root/junos.conf";
+	};
+
+	vm "cst-c2-r1"{
+		hostname "cst-c2-r1";
+		VPTX_LATEST
+
+		interface "em0" { EXTERNAL; };	/* ge-0/0/0 */
+		interface "em1" { bridge "private2"; };	/* ge-0/0/1 */
+
+		install "ENV(HOME)/active/configset/cst-c2-r1.conf" "/root/junos.conf";
+	};
+
+	PRIVATE_BRIDGES
+
+};
